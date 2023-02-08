@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import data from "./data";
+import Answer from "./Answer";
 
 function App() {
-  const [play, setPlay] = useState(false);
+  const [play, setPlay] = useState(true);
   const quiz = data.results;
 
   const quizElements = quiz.map((element) => {
@@ -18,9 +19,11 @@ function App() {
     return (
       <div className="quiz-screen">
         <h2>{element.question}</h2>
-        {shuffleAnswers.map((answer) => (
-          <button>{answer}</button>
-        ))}
+        <div className="answers-container">
+          {shuffleAnswers.map((answer) => (
+            <Answer isHeld={false} value={answer} />
+          ))}
+        </div>
         <hr />
       </div>
     );
@@ -38,7 +41,7 @@ function App() {
         <div className="first-screen">
           <h1>QUIZZICAL</h1>
           <p>Fun Trivia Quiz</p>
-          <button onClick={playGame} className="btn-primary">
+          <button onClick={playGame} className="btn">
             Play Game
           </button>
         </div>

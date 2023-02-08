@@ -1,6 +1,64 @@
 @import url("https://fonts.googleapis.com/css2?family=Karla:wght@400;500;700&display=swap");
 
+* {
+  box-sizing: border-box;
+}
+
 body {
   font-family: "Karla", sans-serif;
+  color: #293264;
+}
+
+.App {
+  display: flex;
+  flex-direction: column;
+  padding: 40px 75px;
+}
+
+.first-screen {
+  position: absolute;
+  top: 40%;
+  text-align: center;
+  align-self: center;
+}
+
+h1 {
+  margin: 0;
+}
+
+.btn {
+  padding: 15px 50px;
+  border-radius: 15px;
+  border: none;
+  background-color: #4d5b9e;
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.quiz-screen {
+  text-align: left;
+}
+
+.answers-container {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 30px;
+}
+.answers {
+  border: 1px solid #293264;
+  color: #293264;
+  border-radius: 15px;
+  padding: 5px 30px;
+  font-weight: 600;
+  font-size: 14px;
+  margin-right: 10px;
+  text-align: center;
+  cursor: pointer;
+  background-color: white;
+}
+
+p {
   margin: 0;
 }
