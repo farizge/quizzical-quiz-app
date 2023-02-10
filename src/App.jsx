@@ -1,33 +1,62 @@
 import { useState, useEffect } from "react";
+import { nanoid } from "nanoid";
+import _ from "lodash";
 import data from "./data";
 import Answer from "./Answer";
 
+const quizzes = data.results.map((element) => {
+  const answers = [
+    ...element.incorrect_answers,
+    element.correct_answer,
+  ];
+  return {
+    question: element.question,
+    answers: answers,
+  };
+});
+console.log(quizzes);
+
 function App() {
   const [play, setPlay] = useState(true);
-  const quiz = data.results;
+  const [quizAnswer, setQuizAnswer] = useState(shuffleAnswers());
+  console.log(quizAnswer);
 
-  const quizElements = quiz.map((element) => {
-    const answers = [
-      ...element.incorrect_answers,
-      element.correct_answer,
-    ];
-    const shuffleAnswers = answers
-      .map((a) => [Math.random(), a])
-      .sort((a, b) => a[0] - b[0])
-      .map((a) => a[1]);
-
-    return (
-      <div className="quiz-screen">
-        <h2>{element.question}</h2>
-        <div className="answers-container">
-          {shuffleAnswers.map((answer) => (
-            <Answer isHeld={false} value={answer} />
-          ))}
-        </div>
-        <hr />
-      </div>
+  function shuffleAnswers() {
+    const newAnswers = [];
+    newAnswers.push(
+      _.shuffle(
+        quizzes.answers.map((answer) => ({
+          value: answer,
+          isChosen: false,
+          id: nanoid(),
+        }))
+      )
     );
-  });
+    return newAnswers;
+  }
+  function chooseAnswer(id) {
+    setQuizAnswer((prevQuizAnswer) =>
+      prevQuizAnswer.map((answer) => {
+        return answer.id === id
+          ? { ...answer, isChosen: !answer.isChosen }
+          : answer;
+      })
+    );
+  }
+
+  const quizElements = quizzes.map((element) => (
+    <div>
+      {quizAnswer.map((answer) => (
+        <Answer
+          key={answer.id}
+          isChosen={answer.isChosen}
+          value={answer.value}
+          choose={() => chooseAnswer(answer.id)}
+        />
+      ))}
+      <hr />
+    </div>
+  ));
 
   function playGame() {
     setPlay(true);
@@ -36,7 +65,7 @@ function App() {
   return (
     <div className="App">
       {play ? (
-        quizElements
+        <div className="quiz-screen">{quizElements}</div>
       ) : (
         <div className="first-screen">
           <h1>QUIZZICAL</h1>
