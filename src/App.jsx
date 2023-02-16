@@ -1,61 +1,55 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { nanoid } from "nanoid";
 import _ from "lodash";
-import data from "./data";
 import Answer from "./Answer";
 
-const quizzes = data.results.map((element) => {
-  const answers = [
-    ...element.incorrect_answers,
-    element.correct_answer,
-  ];
-  return {
-    question: element.question,
-    answers: answers,
-  };
-});
-console.log(quizzes);
-
 function App() {
-  const [play, setPlay] = useState(true);
-  const [quizAnswer, setQuizAnswer] = useState(shuffleAnswers());
-  console.log(quizAnswer);
+  const [play, setPlay] = useState(false);
+  const [quiz, setQuiz] = useState([]);
+  const [answer, setAnswer] = useState([]);
 
-  function shuffleAnswers() {
-    const newAnswers = [];
-    newAnswers.push(
-      _.shuffle(
-        quizzes.answers.map((answer) => ({
-          value: answer,
-          isChosen: false,
-          id: nanoid(),
-        }))
-      )
-    );
-    return newAnswers;
-  }
-  function chooseAnswer(id) {
-    setQuizAnswer((prevQuizAnswer) =>
-      prevQuizAnswer.map((answer) => {
-        return answer.id === id
-          ? { ...answer, isChosen: !answer.isChosen }
-          : answer;
-      })
+  useEffect(() => {
+    fetch("https://opentdb.com/api.php?amount=6")
+      .then((res) => res.json())
+      .then((data) => setQuiz(data.results));
+  }, []);
+
+  useEffect(() => {
+    setAnswer(getAnswer());
+  }, [quiz]);
+
+  function getAnswer() {
+    const allAnswers = quiz.map((answer) => {
+      return _.shuffle([
+        ...answer.incorrect_answers,
+        answer.correct_answer,
+      ]);
+    });
+    return allAnswers.map((answer) =>
+      answer.map((ans) => ({
+        value: ans,
+        isChosen: false,
+        id: nanoid(),
+      }))
     );
   }
 
-  const quizElements = quizzes.map((element) => (
-    <div>
-      {quizAnswer.map((answer) => (
-        <Answer
-          key={answer.id}
-          isChosen={answer.isChosen}
-          value={answer.value}
-          choose={() => chooseAnswer(answer.id)}
-        />
-      ))}
-      <hr />
-    </div>
+  const quizElements = answer.map((element, index) => (
+    <>
+      <h2
+        dangerouslySetInnerHTML={{ __html: quiz[index].question }}
+      ></h2>
+      <div key={index} className="answers-container">
+        {element.map((ans) => (
+          <Answer
+            // key={ans.id}
+            isChosen={ans.isChosen}
+            value={ans.value}
+          />
+        ))}
+        <hr />
+      </div>
+    </>
   ));
 
   function playGame() {
